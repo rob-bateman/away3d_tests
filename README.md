@@ -1,2 +1,2 @@
-away3d_tests
+most of the code is in src.clips.VaseTutorial.as
 ============
