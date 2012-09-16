@@ -2,12 +2,16 @@ package clips
 {
 	import away3d.containers.View3D;
 	import away3d.debug.AwayStats;
+	import away3d.entities.Mesh;
 	import away3d.events.AssetEvent;
 	import away3d.events.LoaderEvent;
 	import away3d.library.AssetLibrary;
+	import away3d.library.assets.AssetType;
 	import away3d.loaders.Loader3D;
 	import away3d.loaders.misc.AssetLoaderToken;
 	import away3d.loaders.parsers.Parsers;
+	import away3d.materials.TextureMaterial;
+	import away3d.utils.Cast;
 	
 	import flash.display.Sprite;
 	import flash.events.Event;
@@ -20,6 +24,11 @@ package clips
 	
 	public class VaseTutorial extends Sprite
 	{
+		
+		//bear color map
+		[Embed(source="/../embeds/polarbear_diffuse.jpg")]
+		private var BearDiffuse:Class;
+		
 		private var _view:View3D;
 		private var _stats:AwayStats;
 		private var _loader:Loader3D;
@@ -37,7 +46,9 @@ package clips
 			
 			_view = new View3D();
 			_view.backgroundColor = 0x446666;
-			_view.antiAlias = 4;			
+			_view.antiAlias = 4;
+			_view.camera.position = new Vector3D(-400, 400, -400);
+			_view.camera.lookAt(new Vector3D());
 			addChild(_view);
 			
 			
@@ -57,7 +68,7 @@ package clips
 			
 			//bear.awd DOES trigger RESOURCE_COMPLETE
 			//vase.awd DOES NOT trigger RESOURCE_COMPLETE
-			_loader.load( new URLRequest('bear.awd') );
+			_loader.load( new URLRequest('PolarBear.awd') );
 			
 			_view.scene.addChild(_loader);
 			
@@ -111,7 +122,13 @@ package clips
 		
 		protected function onAssetComplete(evt:AssetEvent):void
 		{
-			//log( "asset complete" );
+			trace( "asset complete: " + evt.asset );
+			
+			if (evt.asset.assetType == AssetType.MESH) {
+				//create material object and assign it to our mesh
+				var mesh:Mesh = evt.asset as Mesh;
+				mesh.material = new TextureMaterial(Cast.bitmapTexture(BearDiffuse));
+			}
 		}
 		
 		private function log(str:String):void
